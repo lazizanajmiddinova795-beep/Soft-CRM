@@ -7,9 +7,36 @@
     <title>O'qituvchi Paneli | Obsidian OS</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Stars Background */
+        .space-bg {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            background: #05050a;
+        }
+
+        .stars-container {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            background: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/1231630/stars.png') repeat;
+            opacity: 0.5;
+            animation: starMove 200s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes starMove {
+            from { background-position: 0 0; }
+            to { background-position: -10000px 5000px; }
+        }
+    </style>
 </head>
-<body class="font-sans antialiased bg-[#0b0c10]">
-<div x-data="teacherDashboard()" class="h-screen flex flex-col md:flex-row bg-[#0b0c10] text-[#c5c6c7] font-sans selection:bg-[#66fcf1] selection:text-[#0b0c10] overflow-hidden">
+<body class="font-sans antialiased text-[#c5c6c7] selection:bg-[#66fcf1] selection:text-[#0b0c10]">
+<div class="space-bg"></div>
+<div class="stars-container"></div>
+
+<div x-data="teacherDashboard()" class="h-screen flex flex-col md:flex-row bg-transparent overflow-hidden">
     
     <!-- Sidebar -->
     <aside class="w-full md:w-64 bg-[#1f2833] shadow-2xl flex flex-col transition-all duration-300 z-20 cyber-border border-r border-[#66fcf1]/20">
