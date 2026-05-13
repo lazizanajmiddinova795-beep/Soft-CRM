@@ -78,8 +78,8 @@
                 @forelse($contracts as $ct)
                     <tr class="border-b border-gray-700 hover:bg-black hover:bg-opacity-50 transition-colors">
                         <td class="py-3 font-bold">{{ $ct->contract_id }}</td>
-                        <td class="py-3 opacity-70">{{ $ct->user->name }}</td>
-                        <td class="py-3">{{ $ct->service->name }}</td>
+                        <td class="py-3 opacity-70">{{ $ct->user?->name ?? 'Noma\'lum operator' }}</td>
+                        <td class="py-3">{{ $ct->service?->name ?? $ct->custom_type ?? 'O\'chirilgan/Maxsus xizmat' }}</td>
                         <td class="py-3">{{ $ct->client_name }}</td>
                         <td class="py-3 text-right">
                             <div class="font-bold text-[var(--active-color)]">{{ number_format($ct->amount, 0) }}</div>
