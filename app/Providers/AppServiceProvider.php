@@ -28,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
         }
 
         \Illuminate\Support\Facades\Gate::define('master-access', function (\App\Models\User $user) {
-            return $user->is_master === true;
+            return (bool) $user->is_master;
         });
 
         Event::listen(Logout::class, function (Logout $event) {
