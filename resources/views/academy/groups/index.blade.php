@@ -52,7 +52,7 @@
                 </div>
 
                 <div class="mt-6 pt-4 border-t border-white/5 flex gap-2">
-                    <button @click="openEditModal({{ $group->id }}, '{{ addslashes($group->name) }}', '{{ $group->course_id }}', '{{ $group->teacher_id }}', '{{ $group->room_id }}', '{{ $group->start_time }}', '{{ $group->telegram_bot_id }}')" class="flex-1 py-2 bg-white/5 hover:bg-white/10 text-[9px] font-bold uppercase text-white/60 border border-white/10 transition-all">Tahrirlash</button>
+                    <button @click="openEditModal({{ htmlspecialchars(json_encode($group)) }})" class="flex-1 py-2 bg-white/5 hover:bg-white/10 text-[9px] font-bold uppercase text-white/60 border border-white/10 transition-all">Tahrirlash</button>
                     <a href="{{ route('admin.academy.attendance.students', $group->id) }}" class="flex-1 py-2 bg-blue-500/10 hover:bg-blue-600 text-blue-400 hover:text-white text-center text-[9px] font-bold uppercase border border-blue-500/20 transition-all">Davomat</a>
                 </div>
             </div>
@@ -204,14 +204,14 @@
                 start_time: '',
                 telegram_bot_id: ''
             },
-            openEditModal(id, name, course_id, teacher_id, room_id, start_time, bot_id) {
-                this.editUrl = `{{ url('admin/academy/groups') }}/${id}`;
-                this.editData.name = name;
-                this.editData.course_id = course_id;
-                this.editData.teacher_id = teacher_id;
-                this.editData.room_id = room_id;
-                this.editData.start_time = start_time;
-                this.editData.telegram_bot_id = bot_id;
+            openEditModal(group) {
+                this.editUrl = `{{ url('admin/academy/groups') }}/${group.id}`;
+                this.editData.name = group.name;
+                this.editData.course_id = group.course_id;
+                this.editData.teacher_id = group.teacher_id;
+                this.editData.room_id = group.room_id;
+                this.editData.start_time = group.start_time;
+                this.editData.telegram_bot_id = group.telegram_bot_id;
                 this.showEditModal = true;
             }
         }
