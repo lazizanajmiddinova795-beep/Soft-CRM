@@ -53,7 +53,7 @@
         </tbody>
     </table>
 
-    <h3>KUMUSH/XARAJATLAR (TRANZAKSIYALAR)</h3>
+    <h3>KIRIM/XARAJATLAR (TRANZAKSIYALAR)</h3>
     <table>
         <thead>
             <tr>
