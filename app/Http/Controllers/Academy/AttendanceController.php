@@ -12,9 +12,17 @@ use Illuminate\Support\Facades\Http;
 
 class AttendanceController extends Controller
 {
-    public function getStudents(Group $group)
+    public function getStudents(Request $request, Group $group)
     {
         $students = $group->students; 
+        
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'group' => $group->name,
+                'students' => $students
+            ]);
+        }
+        
         return view('academy.attendance.index', compact('group', 'students'));
     }
 

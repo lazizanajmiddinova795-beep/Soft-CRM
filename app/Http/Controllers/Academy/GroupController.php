@@ -61,6 +61,29 @@ class GroupController extends Controller
         return redirect()->back()->with('success', 'Guruh yaratildi va xonaga biriktirildi!');
     }
 
+    public function update(Request $request, Group $group)
+    {
+        $request->validate([
+            'name' => 'required|string',
+            'course_id' => 'required|exists:courses,id',
+            'teacher_id' => 'required|exists:users,id',
+            'room_id' => 'required|exists:rooms,id',
+            'start_time' => 'required',
+            'telegram_bot_id' => 'nullable|exists:telegram_bots,id',
+        ]);
+
+        $group->update([
+            'name' => $request->name,
+            'course_id' => $request->course_id,
+            'teacher_id' => $request->teacher_id,
+            'room_id' => $request->room_id,
+            'start_time' => $request->start_time,
+            'telegram_bot_id' => $request->telegram_bot_id,
+        ]);
+
+        return redirect()->back()->with('success', 'Guruh ma\'lumotlari yangilandi!');
+    }
+
     public function destroy(Group $group)
     {
         $group->delete();

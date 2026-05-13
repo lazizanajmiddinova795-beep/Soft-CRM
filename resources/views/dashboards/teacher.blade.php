@@ -304,7 +304,17 @@
                 fetch(`/admin/academy/attendance/${groupId}`, {
                     headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
                 })
-                .then(res => res.json())
+                .then(async res => {
+                    if (!res.ok) {
+                        const text = await res.text();
+                        throw new Error(`HTTP Error ${res.status}: ${text.substring(0, 100)}`);
+                    }
+                    const contentType = res.headers.get("content-type");
+                    if (!contentType || !contentType.includes("application/json")) {
+                        throw new Error("Server JSON o'rniga HTML qaytardi!");
+                    }
+                    return res.json();
+                })
                 .then(data => {
                     this.activeGroupName = data.group;
                     this.activeStudents = data.students;
@@ -316,7 +326,7 @@
                 })
                 .catch(err => {
                     console.error(err);
-                    alert('Ma\'lumotlarni yuklashda xatolik!');
+                    alert(`Ma'lumotlarni yuklashda xatolik: ${err.message}`);
                     this.loading = false;
                 });
             },
@@ -378,7 +388,17 @@
                 fetch(`/admin/academy/attendance/${groupId}`, {
                     headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
                 })
-                .then(res => res.json())
+                .then(async res => {
+                    if (!res.ok) {
+                        const text = await res.text();
+                        throw new Error(`HTTP Error ${res.status}: ${text.substring(0, 100)}`);
+                    }
+                    const contentType = res.headers.get("content-type");
+                    if (!contentType || !contentType.includes("application/json")) {
+                        throw new Error("Server JSON o'rniga HTML qaytardi!");
+                    }
+                    return res.json();
+                })
                 .then(data => {
                     this.activeGroupName = data.group;
                     this.activeStudents = data.students;
@@ -389,7 +409,7 @@
                 })
                 .catch(err => {
                     console.error(err);
-                    alert('Ma\'lumotlarni yuklashda xatolik!');
+                    alert(`Ma'lumotlarni yuklashda xatolik: ${err.message}`);
                     this.loading = false;
                 });
             },
