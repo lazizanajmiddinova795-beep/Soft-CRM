@@ -45,4 +45,9 @@ class Group extends Model
     {
         return $this->belongsTo(Room::class);
     }
+
+    public function schedules()
+    {
+        return $this->hasMany(Schedule::class);
+    }
 }
