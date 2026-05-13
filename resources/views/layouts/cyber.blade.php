@@ -1,10 +1,20 @@
 <!DOCTYPE html>
+@php
+    $sysSettings = \Illuminate\Support\Facades\Cache::remember('sys_settings_global', 3600, function() {
+        if (class_exists(\App\Models\Setting::class)) {
+            return \App\Models\Setting::pluck('value', 'key')->toArray();
+        }
+        return [];
+    });
+    $companyName = $sysSettings['company_name'] ?? 'OBSIDIAN OS';
+    $companyLogo = $sysSettings['company_logo'] ?? null;
+@endphp
 <html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>ITcloud | Obsidian OS v1</title>
+    <title>{{ $companyName }} | Obsidian OS v1</title>
     
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -190,21 +200,42 @@
         <button @click="sidebarOpen = !sidebarOpen" class="text-white text-2xl hover:text-cyan-400 transition-colors">
             <i class="fa-solid fa-bars"></i>
         </button>
-        <div class="brand" style="margin-bottom:0; font-size: 20px;">IT<span>cloud</span></div>
+        <div class="brand flex flex-col items-center" style="margin-bottom:0;">
+            @if($companyLogo)
+                <img src="{{ $companyLogo }}" alt="Logo" class="h-6 object-contain">
+            @endif
+            <span style="font-size: 14px;">{{ $companyName }}</span>
+        </div>
         <div class="w-6"></div> <!-- Spacer for centering -->
     </div>
 
     <!-- Backdrop for mobile sidebar -->
     <div x-show="sidebarOpen" @click="sidebarOpen = false" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 lg:hidden" x-transition.opacity style="display: none;"></div>
 
-    <div class="dynamic-island" id="dynamicIsland" @click="simulateAIAction()">
-        <i class="fa-solid fa-sparkles island-icon"></i>
-        <span class="island-content" id="islandText">Obsidian OS v1</span>
+    <div class="dynamic-island" id="dynamicIsland" style="display: flex; gap: 10px; align-items: center; z-index: 100;">
+        <div @click="simulateAIAction()" style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-sparkles island-icon"></i>
+            <span class="island-content" id="islandText">Obsidian OS v1</span>
+        </div>
+        <div class="border-l border-white/20 h-4 mx-2"></div>
+        <form action="{{ route('locale.change') }}" method="POST" class="m-0">
+            @csrf
+            <select name="locale" onchange="this.form.submit()" class="bg-transparent text-xs text-white/70 outline-none cursor-pointer hover:text-white uppercase font-bold tracking-widest">
+                <option value="uz" {{ app()->getLocale() == 'uz' ? 'selected' : '' }} class="bg-black text-white">UZ</option>
+                <option value="en" {{ app()->getLocale() == 'en' ? 'selected' : '' }} class="bg-black text-white">EN</option>
+                <option value="ru" {{ app()->getLocale() == 'ru' ? 'selected' : '' }} class="bg-black text-white">RU</option>
+            </select>
+        </form>
     </div>
 
     <!-- Sidebar Menu -->
     <aside class="sidebar glass-panel" :class="{'mobile-open': sidebarOpen}">
-        <div class="brand hidden lg:block">IT<span>cloud</span></div>
+        <div class="brand hidden lg:flex flex-col items-center justify-center gap-2 mt-4 mb-6">
+            @if($companyLogo)
+                <img src="{{ $companyLogo }}" alt="Logo" class="h-10 object-contain">
+            @endif
+            <span class="text-sm font-bold tracking-widest">{{ $companyName }}</span>
+        </div>
         <button @click="sidebarOpen = false" class="lg:hidden absolute top-4 right-4 text-white/50 hover:text-white text-xl">
             <i class="fa-solid fa-xmark"></i>
         </button>

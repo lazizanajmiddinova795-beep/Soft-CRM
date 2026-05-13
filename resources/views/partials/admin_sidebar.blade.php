@@ -12,7 +12,7 @@
 </a>
 <a href="{{ route('admin.clients.index') }}" class="nav-item {{ request()->routeIs('admin.clients.*') ? 'active' : '' }}">
     <i class="fa-solid fa-address-book"></i>
-    <span>MIJOZLAR BAZASI</span>
+    <span>{{ __('messages.clients') ?? 'MIJOZLAR BAZASI' }}</span>
 </a>
 <a href="{{ route('admin.finance.index') }}" class="nav-item {{ request()->routeIs('admin.finance.*') ? 'active' : '' }}">
     <i class="fa-solid fa-vault"></i>
@@ -37,7 +37,7 @@
 </a>
 <a href="{{ route('admin.audit_logs.index') }}" class="nav-item {{ request()->routeIs('admin.audit_logs.*') ? 'active' : '' }}">
     <i class="fa-solid fa-ghost"></i>
-    <span>GHOST LOG (ARXIV)</span>
+    <span>{{ __('messages.ghost_log_feed') ?? 'GHOST LOG (ARXIV)' }}</span>
 </a>
 <a href="{{ route('admin.settings.index') }}" class="nav-item mt-auto {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
     <i class="fa-solid fa-gears"></i>

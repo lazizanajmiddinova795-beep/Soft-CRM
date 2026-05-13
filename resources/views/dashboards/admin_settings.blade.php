@@ -49,7 +49,8 @@
                 <label class="block opacity-70 mb-1">{{ __('messages.upload_logo') }}</label>
                 <input type="file" name="company_logo_file" class="w-full bg-black border border-gray-700 p-2 text-white focus:outline-none focus:border-[var(--active-color)] file:bg-[var(--active-color)] file:text-black file:font-bold file:border-0 file:px-2 cursor-pointer">
                 @if(isset($settings['company_logo']))
-                    <p class="text-sm text-[var(--active-color)] mt-1">{{ __('messages.current') }} {{ $settings['company_logo'] }}</p>
+                    <p class="text-sm text-[var(--active-color)] mt-1">{{ __('messages.current') }}</p>
+                    <img src="{{ $settings['company_logo'] }}" alt="Logo" class="mt-2 h-16 object-contain bg-black/50 p-2 rounded">
                 @endif
             </div>
 
@@ -57,7 +58,8 @@
                 <label class="block opacity-70 mb-1">{{ __('messages.upload_bg') }}</label>
                 <input type="file" name="bg_image_file" class="w-full bg-black border border-gray-700 p-2 text-white focus:outline-none focus:border-[var(--active-color)] file:bg-[var(--active-color)] file:text-black file:font-bold file:border-0 file:px-2 cursor-pointer">
                 @if(isset($settings['bg_image_url']))
-                    <p class="text-sm text-[var(--active-color)] mt-1">{{ __('messages.current') }} {{ $settings['bg_image_url'] }}</p>
+                    <p class="text-sm text-[var(--active-color)] mt-1">{{ __('messages.current') }}</p>
+                    <img src="{{ $settings['bg_image_url'] }}" alt="BG" class="mt-2 h-16 object-cover bg-black/50 p-2 rounded">
                 @endif
             </div>
 

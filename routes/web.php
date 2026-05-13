@@ -22,6 +22,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         }
         return redirect()->route(auth()->user()->role . '.dashboard');
     })->name('dashboard');
+    Route::post('/locale', function(\Illuminate\Http\Request $request) {
+        $request->validate(['locale' => 'required|in:uz,en,ru']);
+        $user = auth()->user();
+        $user->ui_language = $request->locale;
+        $user->save();
+        session()->put('locale', $request->locale);
+        return back();
+    })->name('locale.change');
+
 
     Route::post('/leave-impersonation', [\App\Http\Controllers\StaffController::class, 'leaveImpersonate'])->name('leave.impersonate');
 

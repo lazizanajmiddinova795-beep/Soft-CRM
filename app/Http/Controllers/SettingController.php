@@ -51,8 +51,8 @@ class SettingController extends Controller
                 Setting::updateOrCreate(['key' => $key], ['value' => $value]);
             }
         }
-
         \Illuminate\Support\Facades\Cache::forget('sys_language');
+        \Illuminate\Support\Facades\Cache::forget('sys_settings_global');
 
         AuditLog::create([
             'user_id' => auth()->id(),
