@@ -123,7 +123,7 @@
                                         <div class="text-xs text-gray-400">{{ $schedule->group->course->name ?? 'Kurs kiritilmagan' }}</div>
                                     </td>
                                     <td class="py-4 px-6">
-                                        <span class="px-2 py-1 bg-[#45a29e]/10 text-[#45a29e] rounded border border-[#45a29e]/30 text-xs">Xona: {{ $schedule->room->name ?? 'Kiritilmagan' }}</span>
+                                        <span class="px-2 py-1 bg-[#45a29e]/10 text-[#45a29e] rounded border border-[#45a29e]/30 text-xs">Xona: {{ $schedule->group->room->name ?? 'Kiritilmagan' }}</span>
                                     </td>
                                     <td class="py-4 px-6 text-right flex justify-end gap-2">
                                         <button @click="openAttendance({{ $schedule->group_id }})" class="px-3 py-1.5 bg-[#66fcf1]/10 hover:bg-[#66fcf1]/20 text-[#66fcf1] rounded border border-[#66fcf1]/30 hover:border-[#66fcf1]/60 transition-all text-[10px] font-bold uppercase hover:shadow-[0_0_10px_rgba(102,252,241,0.3)]">Davomat</button>

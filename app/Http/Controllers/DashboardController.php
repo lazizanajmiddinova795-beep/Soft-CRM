@@ -181,8 +181,8 @@ class DashboardController extends Controller
         if (auth()->user()->role !== 'teacher') abort(403);
         
         $activeShift = \App\Models\Shift::where('user_id', auth()->id())->whereNull('ended_at')->first();
-        $groups = \App\Models\Group::where('teacher_id', auth()->id())->with('course', 'students')->get();
-        $schedules = \App\Models\Schedule::whereIn('group_id', $groups->pluck('id'))->with('room', 'group')->get();
+        $groups = \App\Models\Group::where('teacher_id', auth()->id())->with('course', 'students', 'room')->get();
+        $schedules = \App\Models\Schedule::whereIn('group_id', $groups->pluck('id'))->with('group.room')->get();
         
         return view('dashboards.teacher', compact('activeShift', 'groups', 'schedules'));
     }
