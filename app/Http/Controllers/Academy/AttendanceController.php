@@ -62,10 +62,8 @@ class AttendanceController extends Controller
                 ]
             );
 
-            // Notify via Telegram if absent
-            if ($attData['status'] === 'absent' || $attData['status'] === 'late') {
-                $this->sendTelegramNotification($group, $attData, $attendance);
-            }
+            // Notify via Telegram for all statuses
+            $this->sendTelegramNotification($group, $attData, $attendance);
         }
 
         return response()->json(['success' => true, 'message' => 'Davomat saqlandi va xabarnomalar yuborildi!']);
@@ -78,8 +76,16 @@ class AttendanceController extends Controller
         $student = Student::find($attData['student_id']);
         if (!$student) return;
 
-        $statusEmoji = $attData['status'] === 'absent' ? '❌' : '⏳';
-        $statusText = $attData['status'] === 'absent' ? 'KELMADI (SABABSIZ)' : "KECHIKDI ({$attData['late_minutes']} daqiqa)";
+        if ($attData['status'] === 'absent') {
+            $statusEmoji = '❌';
+            $statusText = 'KELMADI (SABABSIZ)';
+        } elseif ($attData['status'] === 'late') {
+            $statusEmoji = '⏳';
+            $statusText = "KECHIKDI ({$attData['late_minutes']} daqiqa)";
+        } else {
+            $statusEmoji = '✅';
+            $statusText = 'KELDI (DARSDA)';
+        }
 
         $message = "🔔 *DAVOMAT XABARNOMASI*\n\n";
         $message .= "🎓 *Guruh:* {$group->name}\n";

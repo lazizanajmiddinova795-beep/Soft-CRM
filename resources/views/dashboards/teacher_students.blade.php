@@ -1,6 +1,14 @@
-@extends('layouts.app')
-@section('title', 'O\'quvchilarim | Obsidian OS')
-@section('content')
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>O'quvchilarim | Obsidian OS</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="font-sans antialiased bg-[#0b0c10]">
 <div class="h-screen flex flex-col md:flex-row bg-[#0b0c10] text-[#c5c6c7] font-sans selection:bg-[#66fcf1] selection:text-[#0b0c10] overflow-hidden">
     
     <!-- Sidebar -->
@@ -82,4 +90,5 @@
         </div>
     </main>
 </div>
-@endsection
+</body>
+</html>

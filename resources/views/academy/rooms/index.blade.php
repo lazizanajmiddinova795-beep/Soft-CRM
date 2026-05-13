@@ -67,6 +67,10 @@
                                             <span class="font-bold truncate w-full text-center">{{ $occupancy->name }}</span>
                                             <span class="opacity-60">{{ substr($occupancy->schedules->where('day_of_week', $d)->first()->start_time, 0, 5) }}</span>
                                         </div>
+                                    @else
+                                        <div @click="openScheduleModal({{ $room->id }}, {{ $d }}, '{{ sprintf('%02d:00', $h) }}')" class="absolute inset-0 cursor-pointer hover:bg-white/10 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                                            <i class="fa-solid fa-plus text-white/30"></i>
+                                        </div>
                                     @endif
                                 </div>
                             @endfor
@@ -122,20 +126,59 @@
             </form>
         </div>
     </div>
+    <!-- Add Schedule Modal -->
+    <div x-show="showScheduleModal" style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div @click.away="showScheduleModal = false" class="bg-[#111] w-full max-w-sm border border-white/10 rounded-lg shadow-2xl overflow-hidden">
+            <div class="p-4 border-b border-white/5 bg-white/5 flex justify-between items-center">
+                <h3 class="text-xs font-bold uppercase tracking-widest text-cyan-400">Jadvalga Guruh Biriktirish</h3>
+                <button @click="showScheduleModal = false" class="text-white/40 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form action="{{ route('admin.academy.schedules.store') }}" method="POST" class="p-6 space-y-4">
+                @csrf
+                <input type="hidden" name="day_of_week" x-model="scheduleData.day_of_week">
+                <input type="hidden" name="start_time" x-model="scheduleData.start_time">
+                
+                <div>
+                    <label class="block text-[10px] uppercase font-bold text-white/40 mb-1">GURUH</label>
+                    <select name="group_id" required class="w-full bg-black border border-white/10 rounded p-2 text-xs text-white focus:border-cyan-400 outline-none transition-all">
+                        <option value="">-- Guruhni tanlang --</option>
+                        @foreach($allGroups as $g)
+                            <option value="{{ $g->id }}">{{ $g->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[10px] uppercase font-bold text-white/40 mb-1">VAQT / KUN</label>
+                    <div class="p-2 border border-white/5 bg-white/5 rounded text-xs text-white/60">
+                        Kun: <span x-text="scheduleData.day_of_week" class="font-bold text-cyan-400"></span>, 
+                        Vaqt: <span x-text="scheduleData.start_time" class="font-bold text-cyan-400"></span>
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-4 bg-cyan-500/20 text-cyan-400 border border-cyan-500 font-bold text-[10px] uppercase tracking-[0.3em] hover:bg-cyan-500 hover:text-black transition-all">JADVALNI SAQLASH</button>
+            </form>
+        </div>
+    </div>
 </div>
-
 <script>
     function roomManager() {
         return {
             showAddModal: false,
             showEditModal: false,
+            showScheduleModal: false,
             editUrl: '',
             editData: { name: '', capacity: '' },
+            scheduleData: { room_id: '', day_of_week: '', start_time: '' },
             openEditModal(room) {
                 this.editData.name = room.name;
                 this.editData.capacity = room.capacity;
                 this.editUrl = `{{ url('admin/academy/rooms') }}/${room.id}`;
                 this.showEditModal = true;
+            },
+            openScheduleModal(roomId, day, time) {
+                this.scheduleData.room_id = roomId;
+                this.scheduleData.day_of_week = day;
+                this.scheduleData.start_time = time;
+                this.showScheduleModal = true;
             }
         }
     }

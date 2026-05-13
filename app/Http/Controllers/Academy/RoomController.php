@@ -12,7 +12,8 @@ class RoomController extends Controller
     public function index()
     {
         $rooms = Room::forCompany()->with(['groups.schedules'])->get();
-        return view('academy.rooms.index', compact('rooms'));
+        $allGroups = Group::forCompany()->get();
+        return view('academy.rooms.index', compact('rooms', 'allGroups'));
     }
 
     public function store(Request $request)

@@ -14,12 +14,13 @@ class GroupController extends Controller
 {
     public function index()
     {
-        $groups = Group::forCompany()->with(['course', 'teacher', 'room'])->latest()->get();
+        $groups = Group::forCompany()->with(['course', 'teacher', 'room', 'telegramBot'])->latest()->get();
         $courses = Course::forCompany()->get();
         $teachers = User::forCompany()->where('role', 'teacher')->get();
         $rooms = Room::forCompany()->get();
+        $telegramBots = \App\Models\TelegramBot::forCompany()->get();
         
-        return view('academy.groups.index', compact('groups', 'courses', 'teachers', 'rooms'));
+        return view('academy.groups.index', compact('groups', 'courses', 'teachers', 'rooms', 'telegramBots'));
     }
 
     public function store(Request $request)
@@ -31,6 +32,7 @@ class GroupController extends Controller
             'room_id' => 'required|exists:rooms,id',
             'start_time' => 'required',
             'days' => 'required|array',
+            'telegram_bot_id' => 'nullable|exists:telegram_bots,id',
         ]);
 
         $group = Group::create([
@@ -41,6 +43,7 @@ class GroupController extends Controller
             'room_id' => $request->room_id,
             'start_time' => $request->start_time,
             'days' => $request->days,
+            'telegram_bot_id' => $request->telegram_bot_id,
             'status' => 'active',
         ]);
 

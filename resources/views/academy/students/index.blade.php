@@ -61,6 +61,10 @@
                 </div>
 
                 <div class="pt-3 border-t border-white/5 flex gap-2">
+                    <a href="tel:{{ $student->phone }}" class="flex-1 text-center py-1.5 bg-green-500/10 hover:bg-green-500/20 text-green-400 text-[9px] font-bold uppercase tracking-widest border border-green-500/20 rounded-sm transition-all flex items-center justify-center gap-1"><i class="fa-solid fa-phone"></i> QO'NG'IROQ</a>
+                    <a href="https://t.me/{{ preg_replace('/[^0-9]/', '', $student->phone) }}" target="_blank" class="flex-1 text-center py-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 text-[9px] font-bold uppercase tracking-widest border border-blue-500/20 rounded-sm transition-all flex items-center justify-center gap-1"><i class="fa-brands fa-telegram"></i> TELEGRAM</a>
+                </div>
+                <div class="pt-2 flex gap-2">
                     <button @click="openGroupModal({{ $student->id }}, '{{ $student->name }}')" class="flex-1 py-1.5 bg-white/5 hover:bg-white/10 text-white/60 text-[9px] font-bold uppercase tracking-widest border border-white/10 rounded-sm transition-all">Guruhga Qo'shish</button>
                     <button @click="openPaymentModal({{ $student->id }}, '{{ $student->name }}')" class="flex-1 py-1.5 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 text-[9px] font-bold uppercase tracking-widest border border-cyan-500/20 rounded-sm transition-all">To'lov Olish</button>
                 </div>

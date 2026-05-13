@@ -116,6 +116,15 @@
                         @endforeach
                     </div>
                 </div>
+                <div>
+                    <label class="block text-[10px] uppercase font-bold text-white/40 mb-1">DAVOMAT TELEGRAM BOT (IXTIYORIY)</label>
+                    <select name="telegram_bot_id" class="w-full bg-black border border-white/10 rounded p-2 text-xs text-white focus:border-blue-400 outline-none">
+                        <option value="">-- Bot tanlanmagan --</option>
+                        @foreach($telegramBots as $bot)
+                            <option value="{{ $bot->id }}">{{ $bot->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
                 <button type="submit" class="w-full py-4 bg-blue-500/20 text-blue-400 border border-blue-500 font-bold text-[10px] uppercase tracking-[0.3em] hover:bg-blue-500 hover:text-black transition-all">GURUHNI TASDIQLASH</button>
             </form>
         </div>

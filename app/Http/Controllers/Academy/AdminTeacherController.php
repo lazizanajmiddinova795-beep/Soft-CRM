@@ -37,6 +37,7 @@ class AdminTeacherController extends Controller
             'role' => 'teacher',
             'status' => 'offline',
             'internal_id' => 'TCH-' . mt_rand(1000, 9999),
+            'company_id' => auth()->user()->company_id,
         ];
 
         if ($request->hasFile('avatar')) {
