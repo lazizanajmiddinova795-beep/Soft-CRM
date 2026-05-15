@@ -69,7 +69,9 @@ class GroupController extends Controller
             'teacher_id' => 'required|exists:users,id',
             'room_id' => 'required|exists:rooms,id',
             'start_time' => 'required',
+            'days' => 'required|array',
             'telegram_bot_id' => 'nullable|exists:telegram_bots,id',
+            'status' => 'required|in:active,inactive',
         ]);
 
         $group->update([
@@ -78,7 +80,9 @@ class GroupController extends Controller
             'teacher_id' => $request->teacher_id,
             'room_id' => $request->room_id,
             'start_time' => $request->start_time,
+            'days' => $request->days,
             'telegram_bot_id' => $request->telegram_bot_id,
+            'status' => $request->status,
         ]);
 
         return redirect()->back()->with('success', 'Guruh ma\'lumotlari yangilandi!');

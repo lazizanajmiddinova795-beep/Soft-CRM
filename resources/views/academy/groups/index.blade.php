@@ -176,14 +176,34 @@
                         <input type="time" name="start_time" x-model="editData.start_time" required class="w-full bg-black border border-white/10 rounded p-2 text-xs text-white focus:border-blue-400 outline-none">
                     </div>
                 </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] uppercase font-bold text-white/40 mb-1">DAVOMAT TELEGRAM BOT (IXTIYORIY)</label>
+                        <select name="telegram_bot_id" x-model="editData.telegram_bot_id" class="w-full bg-black border border-white/10 rounded p-2 text-xs text-white focus:border-blue-400 outline-none">
+                            <option value="">-- Bot tanlanmagan --</option>
+                            @foreach($telegramBots as $bot)
+                                <option value="{{ $bot->id }}">{{ $bot->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase font-bold text-white/40 mb-1">STATUS</label>
+                        <select name="status" x-model="editData.status" required class="w-full bg-black border border-white/10 rounded p-2 text-xs text-white focus:border-blue-400 outline-none">
+                            <option value="active">ACTIVE</option>
+                            <option value="inactive">INACTIVE</option>
+                        </select>
+                    </div>
+                </div>
                 <div>
-                    <label class="block text-[10px] uppercase font-bold text-white/40 mb-1">DAVOMAT TELEGRAM BOT (IXTIYORIY)</label>
-                    <select name="telegram_bot_id" x-model="editData.telegram_bot_id" class="w-full bg-black border border-white/10 rounded p-2 text-xs text-white focus:border-blue-400 outline-none">
-                        <option value="">-- Bot tanlanmagan --</option>
-                        @foreach($telegramBots as $bot)
-                            <option value="{{ $bot->id }}">{{ $bot->name }}</option>
+                    <label class="block text-[10px] uppercase font-bold text-white/40 mb-1">KUNLAR</label>
+                    <div class="grid grid-cols-4 gap-2">
+                        @foreach(['1'=>'Du','2'=>'Se','3'=>'Ch','4'=>'Pa','5'=>'Ju','6'=>'Sh','7'=>'Ya'] as $v => $l)
+                        <label class="flex items-center gap-2 p-2 border border-white/5 bg-white/5 rounded cursor-pointer hover:bg-white/10">
+                            <input type="checkbox" name="days[]" value="{{ $v }}" :checked="editData.days.includes('{{ $v }}')" class="accent-blue-500">
+                            <span class="text-[10px] text-white/60">{{ $l }}</span>
+                        </label>
                         @endforeach
-                    </select>
+                    </div>
                 </div>
                 <button type="submit" class="w-full py-4 bg-blue-500/20 text-blue-400 border border-blue-500 font-bold text-[10px] uppercase tracking-[0.3em] hover:bg-blue-500 hover:text-black transition-all">YANGILASH</button>
             </form>
@@ -209,7 +229,9 @@
                 teacher_id: '',
                 room_id: '',
                 start_time: '',
-                telegram_bot_id: ''
+                telegram_bot_id: '',
+                status: '',
+                days: []
             },
             openEditModal(group) {
                 this.editUrl = `{{ url('admin/academy/groups') }}/${group.id}`;
@@ -219,6 +241,8 @@
                 this.editData.room_id = group.room_id;
                 this.editData.start_time = group.start_time;
                 this.editData.telegram_bot_id = group.telegram_bot_id;
+                this.editData.status = group.status;
+                this.editData.days = Array.isArray(group.days) ? group.days.map(String) : [];
                 this.showEditModal = true;
             },
             deleteGroup(id) {
