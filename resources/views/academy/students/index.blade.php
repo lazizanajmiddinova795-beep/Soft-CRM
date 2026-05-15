@@ -45,7 +45,8 @@
                         </div>
                     </div>
                     <div class="flex gap-2">
-                        <button class="text-white/20 hover:text-cyan-400 transition-colors"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button @click="openEditModal({{ json_encode($student) }})" class="text-white/20 hover:text-cyan-400 transition-colors"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button @click="deleteStudent({{ $student->id }})" class="text-white/20 hover:text-red-500 transition-colors"><i class="fa-solid fa-trash-can"></i></button>
                     </div>
                 </div>
 
@@ -188,6 +189,46 @@
             </form>
         </div>
     </div>
+
+    <!-- Edit Student Modal -->
+    <div x-show="showEditModal" style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div @click.away="showEditModal = false" class="bg-[#111] w-full max-w-md border border-white/10 rounded-lg shadow-2xl overflow-hidden">
+            <div class="p-4 border-b border-white/5 bg-white/5 flex justify-between items-center">
+                <h3 class="text-xs font-bold uppercase tracking-widest text-cyan-400">O'quvchi ma'lumotlarini tahrirlash</h3>
+                <button @click="showEditModal = false" class="text-white/40 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form :action="'{{ url('admin/academy/students') }}/' + activeStudentId" method="POST" class="p-6 space-y-4">
+                @csrf
+                @method('PATCH')
+                <div>
+                    <label class="block text-[10px] uppercase font-bold text-white/40 mb-1">ISM FAMILIYA</label>
+                    <input type="text" name="name" x-model="editForm.name" required class="w-full bg-black border border-white/10 rounded p-2 text-xs text-white focus:border-cyan-400 outline-none">
+                </div>
+                <div>
+                    <label class="block text-[10px] uppercase font-bold text-white/40 mb-1">TEL RAQAM</label>
+                    <input type="text" name="phone" x-model="editForm.phone" required class="w-full bg-black border border-white/10 rounded p-2 text-xs text-white focus:border-cyan-400 outline-none">
+                </div>
+                <div>
+                    <label class="block text-[10px] uppercase font-bold text-white/40 mb-1">MANZIL</label>
+                    <input type="text" name="address" x-model="editForm.address" class="w-full bg-black border border-white/10 rounded p-2 text-xs text-white focus:border-cyan-400 outline-none">
+                </div>
+                <div>
+                    <label class="block text-[10px] uppercase font-bold text-white/40 mb-1">STATUS</label>
+                    <select name="status" x-model="editForm.status" class="w-full bg-black border border-white/10 rounded p-2 text-xs text-white focus:border-cyan-400 outline-none">
+                        <option value="active">FAOL</option>
+                        <option value="inactive">NOFAOL</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full py-3 bg-cyan-500/20 text-cyan-400 border border-cyan-500 font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-cyan-500 hover:text-black transition-all">SAQLASH</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Hidden Delete Form -->
+    <form id="delete-student-form" method="POST" style="display:none;">
+        @csrf
+        @method('DELETE')
+    </form>
 </div>
 
 <script>
@@ -195,11 +236,18 @@
         return {
             searchQuery: '',
             showAddModal: false,
+            showEditModal: false,
             showGroupModal: false,
             showPaymentModal: false,
             activeStudentId: null,
             activeStudentName: '',
             selectedGroupId: '',
+            editForm: {
+                name: '',
+                phone: '',
+                address: '',
+                status: ''
+            },
 
             openGroupModal(id, name) {
                 this.activeStudentId = id;
@@ -211,6 +259,23 @@
                 this.activeStudentId = id;
                 this.activeStudentName = name;
                 this.showPaymentModal = true;
+            },
+
+            openEditModal(student) {
+                this.activeStudentId = student.id;
+                this.editForm.name = student.name;
+                this.editForm.phone = student.phone;
+                this.editForm.address = student.address;
+                this.editForm.status = student.status;
+                this.showEditModal = true;
+            },
+
+            deleteStudent(id) {
+                if(confirm('Haqiqatan ham ushbu o\'quvchini tizimdan o\'chirmoqchimisiz?')) {
+                    const form = document.getElementById('delete-student-form');
+                    form.action = '{{ url('admin/academy/students') }}/' + id;
+                    form.submit();
+                }
             },
 
             addToGroup() {
