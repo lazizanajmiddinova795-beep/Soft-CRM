@@ -28,46 +28,53 @@ class ContractController extends Controller
             return response()->json(['success' => false, 'message' => $validator->errors()->first()], 422);
         }
 
-        $validated = $validator->validated();
-        $items = json_decode($validated['services_json'], true);
+        try {
+            $validated = $validator->validated();
+            $items = json_decode($validated['services_json'], true);
 
-        // Validation for E-imzo requirements
-        $hasImzo = false;
-        foreach($items as $item) {
-            if (str_contains(strtolower($item['type']), 'imzo')) $hasImzo = true;
-        }
+            if (!is_array($items)) {
+                return response()->json(['success' => false, 'message' => 'Xizmatlar ma\'lumoti noto\'g\'ri formatda.'], 422);
+            }
 
-        if ($hasImzo && !$request->hasFile('pfc_file')) {
-            return response()->json(['success' => false, 'message' => 'E-imzo xizmati bo\'lganda buyurtma fayli (.pfx) kiritilishi majburiy!'], 422);
-        }
+            // Validation for E-imzo requirements
+            $hasImzo = false;
+            foreach($items as $item) {
+                if (isset($item['type']) && str_contains(strtolower($item['type']), 'imzo')) $hasImzo = true;
+            }
 
-        // Use the first service as the primary one for legacy table structure
-        $primaryService = $items[0] ?? ['name' => 'Multiple Services', 'type' => 'General', 'cost' => 0, 'price' => 0];
+            if ($hasImzo && !$request->hasFile('pfc_file')) {
+                return response()->json(['success' => false, 'message' => 'E-imzo xizmati bo\'lganda buyurtma fayli (.pfx) kiritilishi majburiy!'], 422);
+            }
 
-        $service = \App\Models\Service::firstOrCreate(
-            ['name' => $primaryService['name']],
-            [
-                'type' => $primaryService['type'],
-                'cost_price' => $primaryService['cost'] ?? 0,
-                'client_price' => $primaryService['price'] ?? 0,
-                'operator_share_percentage' => 10,
-                'company_id' => auth()->user()->company_id
-            ]
-        );
+            // Use the first service as the primary one for legacy table structure
+            $primaryService = $items[0] ?? ['name' => 'Multiple Services', 'type' => 'General', 'cost' => 0, 'price' => 0];
+            $companyId = auth()->user()->company_id;
 
-        $client = null;
-        if (!empty($validated['client_id'])) {
-            $client = \App\Models\Client::find($validated['client_id']);
-        } else {
-            $client = \App\Models\Client::firstOrCreate(
-                ['phone' => $validated['client_phone']],
+            $service = \App\Models\Service::firstOrCreate(
+                ['name' => $primaryService['name'], 'company_id' => $companyId],
                 [
-                    'name' => $validated['client_name'],
-                    'address' => $validated['client_address'],
-                    'company_id' => auth()->user()->company_id
+                    'type' => $primaryService['type'] ?? 'General',
+                    'cost_price' => $primaryService['cost'] ?? 0,
+                    'client_price' => $primaryService['price'] ?? 0,
+                    'operator_share_percentage' => 10,
                 ]
             );
-        }
+
+            $client = null;
+            $clientId = $request->input('client_id');
+            if (!empty($clientId)) {
+                $client = \App\Models\Client::where('company_id', $companyId)->find($clientId);
+            }
+
+            if (!$client) {
+                $client = \App\Models\Client::firstOrCreate(
+                    ['phone' => $validated['client_phone'], 'company_id' => $companyId],
+                    [
+                        'name' => $validated['client_name'],
+                        'address' => $validated['client_address'],
+                    ]
+                );
+            }
 
         // Calculate total cost_price from all items
         $totalCost = 0;
@@ -101,9 +108,16 @@ class ContractController extends Controller
             $contractData['file_path'] = $path;
         }
 
-        Contract::create($contractData);
+            Contract::create($contractData);
 
-        return response()->json(['message' => 'Shartnoma kassaga yo\'naltirildi.', 'success' => true]);
+            return response()->json(['message' => 'Shartnoma kassaga yo\'naltirildi.', 'success' => true]);
+        } catch (\Exception $e) {
+            \Log::error("Contract Store Error: " . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Tizim xatosi: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function approve(Request $request, Contract $contract)
@@ -216,11 +230,10 @@ class ContractController extends Controller
             return redirect()->back()->with('error', 'Fayl topilmadi.');
         }
 
-        $path = storage_path('app/private/' . $contract->file_path);
+        $path = storage_path('app/' . $contract->file_path);
         
         if (!file_exists($path)) {
-            // Try without private if it's in standard app/ contracts
-            $path = storage_path('app/' . $contract->file_path);
+            $path = storage_path('app/private/' . $contract->file_path);
         }
 
         if (!file_exists($path)) {
