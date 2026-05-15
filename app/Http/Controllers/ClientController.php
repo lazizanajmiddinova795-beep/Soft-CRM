@@ -10,7 +10,7 @@ class ClientController extends Controller
 {
     public function index()
     {
-        $clients = Client::withCount('contracts')
+        $clients = Client::forCompany()->withCount('contracts')
             ->with(['debts' => function($q) {
                 $q->where('type', 'installment')->where('status', '!=', 'paid');
             }])
@@ -27,8 +27,11 @@ class ClientController extends Controller
             return response()->json([]);
         }
 
-        $clients = Client::where('name', 'LIKE', "%{$query}%")
-            ->orWhere('phone', 'LIKE', "%{$query}%")
+        $clients = Client::forCompany()
+            ->where(function($q) use ($query) {
+                $q->where('name', 'LIKE', "%{$query}%")
+                  ->orWhere('phone', 'LIKE', "%{$query}%");
+            })
             ->limit(10)
             ->get();
 
