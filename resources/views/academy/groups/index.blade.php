@@ -52,7 +52,8 @@
                 </div>
 
                 <div class="mt-6 pt-4 border-t border-white/5 flex gap-2">
-                    <button @click="openEditModal({{ htmlspecialchars(json_encode($group)) }})" class="flex-1 py-2 bg-white/5 hover:bg-white/10 text-[9px] font-bold uppercase text-white/60 border border-white/10 transition-all">Tahrirlash</button>
+                    <button @click="openEditModal({{ json_encode($group) }})" class="flex-1 py-2 bg-white/5 hover:bg-white/10 text-[9px] font-bold uppercase text-white/60 border border-white/10 transition-all">Tahrirlash</button>
+                    <button @click="deleteGroup({{ $group->id }})" class="w-10 py-2 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white border border-red-500/20 transition-all flex items-center justify-center"><i class="fa-solid fa-trash-can"></i></button>
                     <a href="{{ route('admin.academy.attendance.students', $group->id) }}" class="flex-1 py-2 bg-blue-500/10 hover:bg-blue-600 text-blue-400 hover:text-white text-center text-[9px] font-bold uppercase border border-blue-500/20 transition-all">Davomat</a>
                 </div>
             </div>
@@ -188,6 +189,12 @@
             </form>
         </div>
     </div>
+
+    <!-- Hidden Delete Form -->
+    <form id="delete-group-form" method="POST" style="display:none;">
+        @csrf
+        @method('DELETE')
+    </form>
 </div>
 
 <script>
@@ -213,6 +220,13 @@
                 this.editData.start_time = group.start_time;
                 this.editData.telegram_bot_id = group.telegram_bot_id;
                 this.showEditModal = true;
+            },
+            deleteGroup(id) {
+                if(confirm('Haqiqatan ham ushbu guruhni va unga tegishli barcha dars jadvallarini o\'chirmoqchimisiz?')) {
+                    const form = document.getElementById('delete-group-form');
+                    form.action = '{{ url('admin/academy/groups') }}/' + id;
+                    form.submit();
+                }
             }
         }
     }
