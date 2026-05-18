@@ -316,6 +316,8 @@
                     @csrf
                     <select name="type" x-model="manualType" required class="w-full bg-[var(--input-bg)] text-[var(--text-color)] border border-[var(--border-color)] p-2 text-xs font-bold focus:outline-none focus:border-[var(--active-color)] transition-colors appearance-none font-mono">
                         <option value="income">{{ __('messages.type_income_cash') }}</option>
+                        <option value="income_card" class="text-blue-400">💳 KIRIM (Karta hisobiga)</option>
+                        <option value="cash_to_card" class="text-cyan-400">🔄 Naqd kassadan Kartaga o'tkazish</option>
                         <option value="expense">{{ __('messages.type_expense_office') }}</option>
                         <option value="tech_expense">{{ __('messages.type_expense_dev') }}</option>
                         <option value="salary_payout" class="text-green-500">💰 {{ __('messages.salary_payout') ?? 'Oylik Berish (Salary)' }}</option>
@@ -333,7 +335,7 @@
                         </select>
                     </div>
 
-                    <select name="payment_method" required class="w-full bg-[var(--input-bg)] text-[var(--text-color)] border border-[var(--border-color)] p-2 text-xs font-bold focus:outline-none focus:border-[var(--active-color)] transition-colors appearance-none font-mono mt-2">
+                    <select name="payment_method" x-show="!['cash_to_card', 'income_card'].includes(manualType)" :required="!['cash_to_card', 'income_card'].includes(manualType)" class="w-full bg-[var(--input-bg)] text-[var(--text-color)] border border-[var(--border-color)] p-2 text-xs font-bold focus:outline-none focus:border-[var(--active-color)] transition-colors appearance-none font-mono mt-2">
                         <option value="" disabled selected>-- {{ __('messages.payment_method') ?? 'To\'lov usuli' }} --</option>
                         <option value="cash">💵 {{ __('messages.cash') ?? 'Naqd' }}</option>
                         <option value="card">💳 {{ __('messages.card') ?? 'Karta' }}</option>

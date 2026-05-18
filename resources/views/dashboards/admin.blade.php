@@ -143,22 +143,45 @@
             </h2>
             <form method="POST" action="{{ route('treasury.manual') }}" class="space-y-6">
                 @csrf
-                <div class="flex gap-3">
-                    <label class="flex-1 cursor-pointer group">
-                        <input type="radio" name="type" value="income" checked class="hidden peer">
-                        <div class="text-center p-3 rounded-2xl border border-white/10 group-hover:border-green-500/50 peer-checked:bg-green-500/10 peer-checked:border-green-500 transition-all">
-                            <i class="fa-solid fa-arrow-turn-down text-green-400 mb-1"></i>
-                            <div class="text-[10px] font-bold uppercase tracking-widest text-green-400">Kirim</div>
-                        </div>
-                    </label>
-                    <label class="flex-1 cursor-pointer group">
-                        <input type="radio" name="type" value="expense" class="hidden peer">
-                        <div class="text-center p-3 rounded-2xl border border-white/10 group-hover:border-red-500/50 peer-checked:bg-red-500/10 peer-checked:border-red-500 transition-all">
-                            <i class="fa-solid fa-arrow-turn-up text-red-400 mb-1"></i>
-                            <div class="text-[10px] font-bold uppercase tracking-widest text-red-400">Chiqim</div>
-                        </div>
-                    </label>
-                </div>
+                <div x-data="{ adminManualType: 'income' }" class="space-y-6">
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="cursor-pointer group">
+                            <input type="radio" name="type" value="income" x-model="adminManualType" class="hidden peer">
+                            <div class="text-center p-3 rounded-2xl border border-white/10 group-hover:border-green-500/50 peer-checked:bg-green-500/10 peer-checked:border-green-500 transition-all h-full flex flex-col justify-center items-center">
+                                <i class="fa-solid fa-money-bill text-green-400 mb-1"></i>
+                                <div class="text-[10px] font-bold uppercase tracking-widest text-green-400">Kirim (Naqd)</div>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer group">
+                            <input type="radio" name="type" value="income_card" x-model="adminManualType" class="hidden peer">
+                            <div class="text-center p-3 rounded-2xl border border-white/10 group-hover:border-blue-500/50 peer-checked:bg-blue-500/10 peer-checked:border-blue-500 transition-all h-full flex flex-col justify-center items-center">
+                                <i class="fa-solid fa-credit-card text-blue-400 mb-1"></i>
+                                <div class="text-[10px] font-bold uppercase tracking-widest text-blue-400">Kirim (Karta)</div>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer group">
+                            <input type="radio" name="type" value="expense" x-model="adminManualType" class="hidden peer">
+                            <div class="text-center p-3 rounded-2xl border border-white/10 group-hover:border-red-500/50 peer-checked:bg-red-500/10 peer-checked:border-red-500 transition-all h-full flex flex-col justify-center items-center">
+                                <i class="fa-solid fa-arrow-turn-up text-red-400 mb-1"></i>
+                                <div class="text-[10px] font-bold uppercase tracking-widest text-red-400">Chiqim</div>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer group">
+                            <input type="radio" name="type" value="cash_to_card" x-model="adminManualType" class="hidden peer">
+                            <div class="text-center p-3 rounded-2xl border border-white/10 group-hover:border-cyan-500/50 peer-checked:bg-cyan-500/10 peer-checked:border-cyan-500 transition-all h-full flex flex-col justify-center items-center">
+                                <i class="fa-solid fa-rotate text-cyan-400 mb-1"></i>
+                                <div class="text-[10px] font-bold uppercase tracking-widest text-cyan-400">Naqd -> Karta</div>
+                            </div>
+                        </label>
+                    </div>
+                    
+                    <div x-show="['expense'].includes(adminManualType)" x-transition>
+                        <select name="payment_method" :disabled="!['expense'].includes(adminManualType)" class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white focus:border-cyan-400/50 outline-none transition-all">
+                            <option value="cash" class="bg-black">💵 Naqd pul orqali</option>
+                            <option value="card" class="bg-black">💳 Karta orqali</option>
+                        </select>
+                    </div>
+
                 <div>
                    <input type="number" name="amount" required placeholder="Miqdor (UZS)" class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white focus:border-cyan-400/50 outline-none transition-all placeholder:text-white/20">
                 </div>
@@ -169,6 +192,8 @@
                     <button type="button" @click="showFinanceModal = false" class="flex-1 btn-ios">Bekor Qilish</button>
                     <button type="submit" class="flex-1 btn-ios btn-neon">Tasdiqlash</button>
                 </div>
+                </div> <!-- End x-data space-y-6 -->
+
             </form>
         </div>
     </div>
