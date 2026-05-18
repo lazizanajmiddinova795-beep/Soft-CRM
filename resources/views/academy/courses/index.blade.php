@@ -5,7 +5,7 @@
 @endsection
 
 @section('content')
-<div class="flex-1 min-h-0 overflow-y-auto w-full p-4 lg:p-8 space-y-6 slim-scroll" x-data="{ showAddModal: false }">
+<div class="flex-1 min-h-0 overflow-y-auto w-full p-4 lg:p-8 space-y-6 slim-scroll" x-data="courseManager()">
     <div class="glass-panel p-6">
         <div class="flex justify-between items-center mb-8 pt-4">
             <div class="panel-title mb-0 flex items-center gap-4">
@@ -38,7 +38,7 @@
                     </div>
                 </div>
                 <div class="pt-6 flex gap-2">
-                    <button class="flex-1 py-2 bg-white/5 hover:bg-white/10 text-[9px] font-bold uppercase tracking-widest text-white/60 border border-white/10 transition-all">Tahrirlash</button>
+                    <button @click="openEditModal({{ json_encode($course) }})" class="flex-1 py-2 bg-white/5 hover:bg-white/10 text-[9px] font-bold uppercase tracking-widest text-white/60 border border-white/10 transition-all">Tahrirlash</button>
                     <form action="{{ route('admin.academy.courses.destroy', $course->id) }}" method="POST" class="flex-1">
                         @csrf
                         @method('DELETE')
@@ -81,5 +81,62 @@
             </form>
         </div>
     </div>
+
+    <!-- Edit Modal -->
+    <div x-show="showEditModal" style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div @click.away="showEditModal = false" class="bg-[#111] w-full max-w-md border border-white/10 rounded-lg shadow-2xl overflow-hidden">
+            <div class="p-4 border-b border-white/5 bg-white/5 flex justify-between items-center">
+                <h3 class="text-xs font-bold uppercase tracking-widest text-cyan-400">Kursni Tahrirlash</h3>
+                <button @click="showEditModal = false" class="text-white/40 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form :action="`/admin/academy/courses/${editForm.id}`" method="POST" class="p-6 space-y-4">
+                @csrf
+                @method('PUT')
+                <div>
+                    <label class="block text-[10px] uppercase font-bold text-white/40 mb-1">KURS NOMI</label>
+                    <input type="text" name="name" x-model="editForm.name" required class="w-full bg-black border border-white/10 rounded p-2 text-xs text-white focus:border-cyan-400 outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] uppercase font-bold text-white/40 mb-1">OYLIK NARXI (UZS)</label>
+                        <input type="number" name="price" x-model="editForm.price" required class="w-full bg-black border border-white/10 rounded p-2 text-xs text-cyan-400 font-bold focus:border-cyan-400 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase font-bold text-white/40 mb-1">DAVOMIYLIGI</label>
+                        <input type="text" name="duration" x-model="editForm.duration" placeholder="i.e. 6 oy" class="w-full bg-black border border-white/10 rounded p-2 text-xs text-white focus:border-cyan-400 outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[10px] uppercase font-bold text-white/40 mb-1">TAVSIF (IXTIYORIY)</label>
+                    <textarea name="description" x-model="editForm.description" class="w-full bg-black border border-white/10 rounded p-2 text-xs text-white focus:border-cyan-400 outline-none" rows="3"></textarea>
+                </div>
+                <button type="submit" class="w-full py-4 bg-cyan-500/20 text-cyan-400 border border-cyan-500 font-bold text-[10px] uppercase tracking-[0.3em] hover:bg-cyan-500 hover:text-black transition-all">SAQLASH</button>
+            </form>
+        </div>
+    </div>
 </div>
+
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('courseManager', () => ({
+            showAddModal: false,
+            showEditModal: false,
+            editForm: {
+                id: null,
+                name: '',
+                price: '',
+                duration: '',
+                description: ''
+            },
+            openEditModal(course) {
+                this.editForm.id = course.id;
+                this.editForm.name = course.name;
+                this.editForm.price = course.price;
+                this.editForm.duration = course.duration;
+                this.editForm.description = course.description || '';
+                this.showEditModal = true;
+            }
+        }));
+    });
+</script>
 @endsection
