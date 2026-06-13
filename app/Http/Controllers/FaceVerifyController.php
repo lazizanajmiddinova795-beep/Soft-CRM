@@ -45,7 +45,7 @@ class FaceVerifyController extends Controller
                 [
                     'parts' => [
                         [
-                            'text' => 'You are a strict security biometric system. Look at the two images provided. The first is a live camera feed (might be low quality). The second is an ID photo. Do they clearly show the EXACT same person? Focus on facial bone structure, eye proportions, and unique facial landmarks even if the live image has noise, bad lighting, or blur. If it is the same person, reply ONLY with "YES". If it is definitively a different person or the face is completely covered/missing, reply ONLY with "NO".'
+                            'text' => 'CRITICAL SECURITY PROTOCOL: You are a high-security biometric face verification system. Compare the face in the first image (live webcam capture) with the face in the second image (reference ID photo). Focus strictly on unique facial structures: bone framework, eye distance, nose bridge shape, jawline, and lip alignment. Even if there is noise, lighting differences, or slight angle variations, do NOT authorize unless they are unequivocally the EXACT SAME PERSON. If they are different people, or if the face is not fully visible, or if you have any doubt, you MUST reject. Reply ONLY with the word "YES" to authorize, or ONLY with the word "NO" to reject. Do not output any other text or punctuation.'
                         ],
                         [
                             'inlineData' => [
@@ -64,7 +64,7 @@ class FaceVerifyController extends Controller
             ],
             'generationConfig' => [
                 'temperature' => 0.0,
-                'maxOutputTokens' => 10
+                'maxOutputTokens' => 5
             ]
         ];
         
@@ -75,7 +75,9 @@ class FaceVerifyController extends Controller
         if ($response->successful()) {
             $data = $response->json();
             $text = $data['candidates'][0]['content']['parts'][0]['text'] ?? 'NO';
-            if (str_contains(strtoupper($text), 'YES')) {
+            $cleanText = trim(str_replace(['"', "'", '`', '*', '.', "\n", "\r", ' '], '', strtoupper($text)));
+            
+            if ($cleanText === 'YES') {
                 return response()->json(['success' => true, 'message' => "Tizimga xush kelibsiz " . strtoupper($user->name) . ", kelganingiz uchun rahmat!"]);
             }
             return response()->json(['success' => false, 'message' => 'Identity mismatch or invalid face detected. Access denied.']);
