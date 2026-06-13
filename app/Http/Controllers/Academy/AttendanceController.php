@@ -63,7 +63,7 @@ class AttendanceController extends Controller
                     'date' => $date,
                 ],
                 [
-                    'company_id' => auth()->user()->company_id,
+                    'company_id' => $group->company_id ?? auth()->user()->company_id,
                     'time' => $time,
                     'status' => $attData['status'],
                     'late_minutes' => $attData['late_minutes'] ?? 0,
