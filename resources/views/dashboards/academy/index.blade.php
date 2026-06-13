@@ -20,6 +20,9 @@
 
     <!-- Quick Actions Row -->
     <div class="flex flex-wrap gap-4 mb-2">
+        <a href="{{ route('admin.academy.groups.index') }}" class="px-4 py-2 bg-green-500/10 text-green-400 border border-green-500/20 hover:bg-green-500 hover:text-black transition-all text-[10px] font-bold uppercase tracking-widest rounded flex items-center gap-2">
+            <i class="fa-solid fa-clipboard-check"></i> DAVOMAT NAZORATI
+        </a>
         <a href="{{ route('admin.academy.students.index') }}" class="px-4 py-2 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 hover:bg-cyan-500 hover:text-black transition-all text-[10px] font-bold uppercase tracking-widest rounded flex items-center gap-2">
             <i class="fa-solid fa-user-plus"></i> O'QUVCHI QO'SHISH
         </a>
@@ -103,15 +106,20 @@
             </div>
             <div class="flex-1 overflow-y-auto slim-scroll space-y-3">
                 @forelse($activeGroups as $group)
-                <div class="p-3 rounded-2xl bg-white/5 border border-white/5 hover:border-purple-500/30 transition-all">
-                    <div class="flex justify-between items-center mb-2">
-                        <div class="font-bold text-sm text-purple-400">{{ $group->name }}</div>
-                        <div class="text-[10px] font-bold opacity-60 uppercase">{{ $group->course->name ?? 'N/A' }}</div>
+                <div class="p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-purple-500/30 transition-all flex justify-between items-center gap-4">
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                            <div class="font-bold text-sm text-purple-400">{{ $group->name }}</div>
+                            <div class="text-[9px] font-bold opacity-60 uppercase bg-white/10 px-1.5 py-0.5 rounded text-white">{{ $group->course->name ?? 'N/A' }}</div>
+                        </div>
+                        <div class="flex gap-4 text-[10px] opacity-60">
+                            <span><i class="fa-solid fa-chalkboard-user mr-1 text-purple-400"></i> {{ $group->teacher->name ?? 'N/A' }}</span>
+                            <span><i class="fa-solid fa-door-open mr-1 text-purple-400"></i> {{ $group->room->name ?? 'N/A' }}</span>
+                        </div>
                     </div>
-                    <div class="flex justify-between items-center text-[10px] opacity-60">
-                        <span><i class="fa-solid fa-chalkboard-user mr-1"></i> {{ $group->teacher->name ?? 'N/A' }}</span>
-                        <span><i class="fa-solid fa-door-open mr-1"></i> {{ $group->room->name ?? 'N/A' }}</span>
-                    </div>
+                    <a href="{{ route('admin.academy.attendance.students', $group->id) }}" class="px-3 py-2 bg-green-500/10 hover:bg-green-600 border border-green-500/20 text-green-400 hover:text-black text-[9px] font-black uppercase tracking-wider rounded transition-all shrink-0">
+                        <i class="fa-solid fa-clipboard-check mr-1"></i> Davomat
+                    </a>
                 </div>
                 @empty
                 <div class="flex flex-col items-center justify-center h-full opacity-30 italic">
