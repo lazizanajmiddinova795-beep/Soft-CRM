@@ -651,45 +651,56 @@
                         this.faceIdProgress = 45;
                         
                         video.onloadeddata = () => {
-                            setTimeout(async () => {
-                                this.faceIdProgress = 75;
-                                this.faceIdMessage = 'UPLOADING TO NEURAL NETWORK...';
-                                const frameData = this.captureFrame(video);
-                                
-                                try {
-                                    const response = await fetch('{{ route('operator.face_verify') }}', {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json',
-                                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                                        },
-                                        body: JSON.stringify({ image: frameData })
-                                    });
-                                    const result = await response.json();
+                            let secondsLeft = 30;
+                            this.faceIdMessage = `SCANNING RETINAL PATTERNS (${secondsLeft}s)...`;
+                            this.faceIdProgress = 20;
+
+                            let countdownInterval = setInterval(async () => {
+                                secondsLeft--;
+                                this.faceIdProgress = 20 + ((30 - secondsLeft) * 2.3);
+                                this.faceIdMessage = `SCANNING RETINAL PATTERNS (${secondsLeft}s)...`;
+
+                                if (secondsLeft <= 0) {
+                                    clearInterval(countdownInterval);
+                                    this.faceIdProgress = 90;
+                                    this.faceIdMessage = 'UPLOADING TO NEURAL NETWORK...';
+                                    const frameData = this.captureFrame(video);
                                     
-                                    if (result.success) {
-                                        this.faceIdProgress = 100;
-                                        this.faceIdMessage = 'ACCESS GRANTED: ' + result.message;
-                                        this.speakUzbek("Tashrifingiz tasdiqlandi. " + result.message);
+                                    try {
+                                        const response = await fetch('{{ route('operator.face_verify') }}', {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type': 'application/json',
+                                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                                            },
+                                            body: JSON.stringify({ image: frameData })
+                                        });
+                                        const result = await response.json();
+                                        
+                                        if (result.success) {
+                                            this.faceIdProgress = 100;
+                                            this.faceIdMessage = 'ACCESS GRANTED: ' + result.message;
+                                            this.speakUzbek("Tashrifingiz tasdiqlandi. " + result.message);
+                                            const tracks = stream.getTracks();
+                                            tracks.forEach(track => track.stop());
+                                            setTimeout(() => document.getElementById('startShiftForm').submit(), 2500);
+                                        } else {
+                                            this.faceIdMessage = 'ACCESS DENIED: ' + result.message;
+                                            this.speakUzbek("Kirish bloklandi. " + result.message);
+                                            this.faceIdProgress = 0;
+                                            const tracks = stream.getTracks();
+                                            tracks.forEach(track => track.stop());
+                                            setTimeout(() => { this.faceIdOverlay = false; }, 3000);
+                                        }
+                                    } catch (e) {
+                                        this.faceIdMessage = 'LINK ERROR: UPLINK LOST';
+                                        this.speakUzbek("Aloqa uzildi.");
                                         const tracks = stream.getTracks();
                                         tracks.forEach(track => track.stop());
-                                        setTimeout(() => document.getElementById('startShiftForm').submit(), 2500);
-                                    } else {
-                                        this.faceIdMessage = 'ACCESS DENIED: ' + result.message;
-                                        this.speakUzbek("Kirish bloklandi. " + result.message);
-                                        this.faceIdProgress = 0;
-                                        const tracks = stream.getTracks();
-                                        tracks.forEach(track => track.stop());
-                                        setTimeout(() => { this.faceIdOverlay = false; }, 3000);
+                                        setTimeout(() => { this.faceIdOverlay = false; }, 2000);
                                     }
-                                } catch (e) {
-                                    this.faceIdMessage = 'LINK ERROR: UPLINK LOST';
-                                    this.speakUzbek("Aloqa uzildi.");
-                                    const tracks = stream.getTracks();
-                                    tracks.forEach(track => track.stop());
-                                    setTimeout(() => { this.faceIdOverlay = false; }, 2000);
                                 }
-                            }, 2000);
+                            }, 1000);
                         };
                     })
                     .catch(err => {
