@@ -98,12 +98,17 @@
                         attendances: batch
                     })
                 })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
+                .then(async res => {
+                    const data = await res.json();
+                    if (res.ok && data.success) {
                         alert(data.message);
                         window.location.href = '{{ route('admin.academy.groups.index') }}';
+                    } else {
+                        alert("Xatolik: " + (data.message || "Ma'lumotlar to'liq belgilanmagan yoki xato."));
                     }
+                })
+                .catch(err => {
+                    alert("Tarmoq xatosi: " + err.message);
                 });
             }
         }
