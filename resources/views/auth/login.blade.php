@@ -112,9 +112,9 @@
 
                     this.progress = 15;
 
-                    // Run progress animation
+                    // Run progress animation (takes approx. 30 seconds to reach 100%)
                     let interval = setInterval(() => {
-                        this.progress += Math.floor(Math.random() * 8) + 3;
+                        this.progress += (Math.random() * 0.7) + 0.5;
 
                         if (this.progress >= 25 && this.progress < 50) {
                             this.scanMessage = this.cameraActive ? 'ANALYZING BIOMETRICS...' : 'ESTABLISHING HANDSHAKE...';
@@ -140,7 +140,7 @@
 
                             setTimeout(() => document.getElementById('cyberLoginForm').submit(), 600);
                         }
-                    }, 200);
+                    }, 300);
                 }
             }));
         });
