@@ -8,6 +8,11 @@
     });
     $companyName = $sysSettings['company_name'] ?? 'OBSIDIAN OS';
     $companyLogo = $sysSettings['company_logo'] ?? null;
+    
+    $colorAdmin = $sysSettings['color_admin'] ?? '#FFD700';
+    $colorOperator = $sysSettings['color_operator'] ?? '#00E5FF';
+    $colorCashier = $sysSettings['color_cashier'] ?? '#00FF00';
+    $colorDev = $sysSettings['color_dev'] ?? '#FF00FF';
 @endphp
 <html lang="{{ app()->getLocale() }}">
 <head>
