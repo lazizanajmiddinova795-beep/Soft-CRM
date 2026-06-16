@@ -20,67 +20,34 @@
             <div class="text-[10px] font-mono text-white/40 uppercase">{{ now()->format('d.m.Y') }}</div>
         </div>
 
-        <div class="overflow-x-auto slim-scroll bg-[#0a0a0f] rounded-2xl border border-white/5">
-            <table class="w-full text-left font-mono text-xs border-collapse min-w-[900px]">
-                <thead>
-                    <tr class="border-b border-white/10 text-white/40 text-[10px] uppercase tracking-wider bg-white/5">
-                        <th class="py-4 px-4 font-black">O'quvchi</th>
-                        <th class="py-4 px-4 font-black">Bugungi Davomat</th>
-                        <th class="py-4 px-4 font-black text-center">Baho (Bugun)</th>
-                        <th class="py-4 px-4 font-black text-center">Haftalik (Keldi/Kelmadi/Kechikdi)</th>
-                        <th class="py-4 px-4 font-black text-center">Oylik (Keldi/Kelmadi/Kechikdi)</th>
-                        <th class="py-4 px-4 font-black text-center">O'rtacha Baho (30 kun)</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-white/5">
-                    @foreach($students as $student)
-                    <tr class="hover:bg-white/5 transition-colors">
-                        <td class="py-4 px-4">
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center text-green-400 border border-green-500/20 font-bold text-xs">
-                                    {{ substr($student->name, 0, 1) }}
-                                </div>
-                                <div>
-                                    <div class="font-bold text-white text-sm">{{ $student->name }}</div>
-                                    <div class="text-[10px] text-white/40">{{ $student->phone }}</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="py-4 px-4">
-                            <div class="flex items-center gap-2">
-                                <button type="button" @click="mark('{{ $student->id }}', 'present')" :class="getStatusClass('{{ $student->id }}', 'present')" class="px-3 py-1.5 text-[9px] font-bold uppercase tracking-widest border transition-all rounded">KELDI</button>
-                                <button type="button" @click="mark('{{ $student->id }}', 'absent')" :class="getStatusClass('{{ $student->id }}', 'absent')" class="px-3 py-1.5 text-[9px] font-bold uppercase tracking-widest border transition-all rounded">KELMADI</button>
-                                <button type="button" @click="mark('{{ $student->id }}', 'late')" :class="getStatusClass('{{ $student->id }}', 'late')" class="px-3 py-1.5 text-[9px] font-bold uppercase tracking-widest border transition-all rounded">KECHIKDI</button>
-                                
-                                <div x-show="attendances['{{ $student->id }}'] == 'late'" class="w-16" x-transition>
-                                    <input type="number" x-model="lateMinutes['{{ $student->id }}']" placeholder="Daq" class="w-full bg-black border border-white/10 rounded px-1.5 py-1 text-xs text-center text-yellow-400 outline-none focus:border-yellow-400">
-                                </div>
-                            </div>
-                        </td>
-                        <td class="py-4 px-4 text-center">
-                            <input type="number" min="0" max="100" x-model="grades['{{ $student->id }}']" placeholder="Baho" class="w-16 bg-black border border-white/10 rounded px-2 py-1 text-xs text-center text-green-400 outline-none focus:border-green-400">
-                        </td>
-                        <td class="py-4 px-4 text-center text-[11px]">
-                            <span class="text-green-400 font-bold" title="Kelgan">{{ $student->weekly_present }}</span> / 
-                            <span class="text-red-400 font-bold" title="Kelmadi">{{ $student->weekly_absent }}</span> / 
-                            <span class="text-yellow-400 font-bold" title="Kechikdi">{{ $student->weekly_late }}</span>
-                        </td>
-                        <td class="py-4 px-4 text-center text-[11px]">
-                            <span class="text-green-400 font-bold" title="Kelgan">{{ $student->monthly_present }}</span> / 
-                            <span class="text-red-400 font-bold" title="Kelmadi">{{ $student->monthly_absent }}</span> / 
-                            <span class="text-yellow-400 font-bold" title="Kechikdi">{{ $student->monthly_late }}</span>
-                        </td>
-                        <td class="py-4 px-4 text-center font-bold text-sm text-yellow-400">
-                            {{ $student->monthly_avg_grade }}
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+        <div class="space-y-4">
+            @foreach($students as $student)
+            <div class="glass-panel bg-white/5 border border-white/10 p-4 rounded-xl flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex items-center gap-4 w-full md:w-auto">
+                    <div class="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center text-green-400 border border-green-500/20 font-bold">
+                        {{ substr($student->name, 0, 1) }}
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-bold text-white">{{ $student->name }}</h4>
+                        <p class="text-[10px] font-mono text-white/40">{{ $student->phone }}</p>
+                    </div>
+                </div>
+
+                <div class="flex gap-2 w-full md:w-auto overflow-x-auto pb-1">
+                    <button @click="mark('{{ $student->id }}', 'present')" :class="getStatusClass('{{ $student->id }}', 'present')" class="px-4 py-2 text-[9px] font-bold uppercase tracking-widest border transition-all">KELDI</button>
+                    <button @click="mark('{{ $student->id }}', 'absent')" :class="getStatusClass('{{ $student->id }}', 'absent')" class="px-4 py-2 text-[9px] font-bold uppercase tracking-widest border transition-all">KELMADI</button>
+                    <button @click="mark('{{ $student->id }}', 'late')" :class="getStatusClass('{{ $student->id }}', 'late')" class="px-4 py-2 text-[9px] font-bold uppercase tracking-widest border transition-all">KECHIKDI</button>
+                </div>
+                
+                <div x-show="attendances['{{ $student->id }}'] == 'late'" class="w-24 shrink-0" x-transition>
+                    <input type="number" x-model="lateMinutes['{{ $student->id }}']" placeholder="Min" class="w-full bg-black border border-white/10 rounded p-1 text-xs text-center text-yellow-400">
+                </div>
+            </div>
+            @endforeach
         </div>
 
         <div class="mt-10 pt-6 border-t border-white/5">
-            <button @click="saveAttendance()" class="w-full py-4 bg-green-600/20 text-green-400 border border-green-500 font-bold text-xs uppercase tracking-[0.3em] hover:bg-green-600 hover:text-white transition-all shadow-[0_0_20px_rgba(34,197,94,0.2)]">DAVOMAT VA BAHOLARNI SAQLASH</button>
+            <button @click="saveAttendance()" class="w-full py-4 bg-green-600/20 text-green-400 border border-green-500 font-bold text-xs uppercase tracking-[0.3em] hover:bg-green-600 hover:text-white transition-all shadow-[0_0_20px_rgba(34,197,94,0.2)]">DAVOMATNI SAQLASH</button>
         </div>
     </div>
 </div>
@@ -91,7 +58,6 @@
             groupId: '{{ $group->id }}',
             attendances: {},
             lateMinutes: {},
-            grades: {},
             
             mark(studentId, status) {
                 this.attendances[studentId] = status;
@@ -113,8 +79,7 @@
                     batch.push({
                         student_id: id,
                         status: this.attendances[id],
-                        late_minutes: this.lateMinutes[id] || 0,
-                        grade: this.grades[id] || null
+                        late_minutes: this.lateMinutes[id] || 0
                     });
                 });
                 

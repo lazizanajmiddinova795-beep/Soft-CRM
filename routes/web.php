@@ -8,6 +8,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::post('/face-verify-login', [\App\Http\Controllers\FaceVerifyController::class, 'verifyLoginFace'])->name('face_verify_login');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     // Master Admin Routes
     Route::group(['prefix' => 'master', 'middleware' => 'can:master-access'], function() {

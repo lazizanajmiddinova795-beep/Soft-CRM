@@ -75,14 +75,6 @@
         </div>
     </div>
 
-    <style>
-        @keyframes faceScan {
-            0% { top: 0%; }
-            50% { top: 100%; }
-            100% { top: 0%; }
-        }
-    </style>
-
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.data('neuralAuth', () => ({
@@ -91,56 +83,94 @@
                 cameraActive: false,
                 scanMessage: 'INITIALIZING CAMERA...',
 
+                captureFrame(video) {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = video.videoWidth || 320;
+                    canvas.height = video.videoHeight || 320;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    return canvas.toDataURL('image/jpeg', 0.8);
+                },
+
                 async initiateLink() {
+                    const email = document.querySelector('input[name="email"]').value;
+                    const password = document.querySelector('input[name="password"]').value;
+
                     this.scanning = true;
                     this.progress = 5;
                     this.scanMessage = 'INITIALIZING CAMERA...';
+                    let stream = null;
 
                     // Try to open the camera
                     try {
-                        const stream = await navigator.mediaDevices.getUserMedia({ 
+                        stream = await navigator.mediaDevices.getUserMedia({ 
                             video: { facingMode: 'user', width: 320, height: 320 } 
                         });
                         this.$refs.cameraFeed.srcObject = stream;
                         this.cameraActive = true;
-                        this.scanMessage = 'SCANNING FACE...';
                     } catch (err) {
                         console.warn('Camera not available:', err);
                         this.cameraActive = false;
-                        this.scanMessage = 'ENCRYPTING DATA...';
+                        this.scanning = false;
+                        alert("Xatolik: Kamera topilmadi yoki ruxsat berilmadi!");
+                        return;
                     }
 
-                    this.progress = 15;
+                    this.progress = 10;
+                    let secondsLeft = 30;
+                    this.scanMessage = `SCANNING FACE (${secondsLeft}s)...`;
 
-                    // Run progress animation (takes approx. 30 seconds to reach 100%)
-                    let interval = setInterval(() => {
-                        this.progress += (Math.random() * 0.7) + 0.5;
+                    // Run progress animation (takes 30 seconds)
+                    let interval = setInterval(async () => {
+                        secondsLeft--;
+                        this.progress = 10 + ((30 - secondsLeft) * 2.6); // 10% to 88%
+                        this.scanMessage = `SCANNING FACE (${secondsLeft}s)...`;
 
-                        if (this.progress >= 25 && this.progress < 50) {
-                            this.scanMessage = this.cameraActive ? 'ANALYZING BIOMETRICS...' : 'ESTABLISHING HANDSHAKE...';
-                        }
-                        if (this.progress >= 50 && this.progress < 75) {
-                            this.scanMessage = this.cameraActive ? 'FACE RECOGNIZED' : 'VERIFYING CREDENTIALS...';
-                        }
-                        if (this.progress >= 75 && this.progress < 95) {
-                            this.scanMessage = 'VERIFYING CREDENTIALS...';
-                        }
-                        if (this.progress >= 95) {
-                            this.scanMessage = 'ACCESS AUTHORIZED';
-                        }
-
-                        if (this.progress >= 100) {
-                            this.progress = 100;
+                        if (secondsLeft <= 0) {
                             clearInterval(interval);
+                            this.progress = 90;
+                            this.scanMessage = 'VERIFYING CREDENTIALS & BIOMETRICS...';
 
-                            // Stop camera
-                            if (this.cameraActive && this.$refs.cameraFeed.srcObject) {
-                                this.$refs.cameraFeed.srcObject.getTracks().forEach(t => t.stop());
+                            const frameData = this.captureFrame(this.$refs.cameraFeed);
+
+                            try {
+                                const response = await fetch('/face-verify-login', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                                    },
+                                    body: JSON.stringify({
+                                        email: email,
+                                        password: password,
+                                        image: frameData
+                                    })
+                                });
+                                const result = await response.json();
+
+                                if (result.success) {
+                                    this.progress = 100;
+                                    this.scanMessage = 'ACCESS AUTHORIZED';
+                                    if (stream) {
+                                        stream.getTracks().forEach(t => t.stop());
+                                    }
+                                    setTimeout(() => document.getElementById('cyberLoginForm').submit(), 600);
+                                } else {
+                                    if (stream) {
+                                        stream.getTracks().forEach(t => t.stop());
+                                    }
+                                    this.scanning = false;
+                                    alert("Tizimga kirish rad etildi: " + result.message);
+                                }
+                            } catch (e) {
+                                if (stream) {
+                                    stream.getTracks().forEach(t => t.stop());
+                                }
+                                this.scanning = false;
+                                alert("Aloqa xatosi! Iltimos qayta urinib ko'ring.");
                             }
-
-                            setTimeout(() => document.getElementById('cyberLoginForm').submit(), 600);
                         }
-                    }, 300);
+                    }, 1000);
                 }
             }));
         });

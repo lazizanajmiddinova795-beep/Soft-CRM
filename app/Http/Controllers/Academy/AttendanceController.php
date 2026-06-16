@@ -16,33 +16,6 @@ class AttendanceController extends Controller
     {
         $students = $group->students; 
         
-        foreach ($students as $student) {
-            // Weekly stats (last 7 days)
-            $weeklyAttendance = \App\Models\Attendance::where('student_id', $student->id)
-                ->where('group_id', $group->id)
-                ->where('date', '>=', now()->subDays(7)->toDateString())
-                ->get();
-            $student->weekly_present = $weeklyAttendance->where('status', 'present')->count();
-            $student->weekly_absent = $weeklyAttendance->where('status', 'absent')->count();
-            $student->weekly_late = $weeklyAttendance->where('status', 'late')->count();
-
-            // Monthly stats (last 30 days)
-            $monthlyAttendance = \App\Models\Attendance::where('student_id', $student->id)
-                ->where('group_id', $group->id)
-                ->where('date', '>=', now()->subDays(30)->toDateString())
-                ->get();
-            $student->monthly_present = $monthlyAttendance->where('status', 'present')->count();
-            $student->monthly_absent = $monthlyAttendance->where('status', 'absent')->count();
-            $student->monthly_late = $monthlyAttendance->where('status', 'late')->count();
-
-            // Monthly average grade (last 30 days)
-            $avgGrade = \App\Models\Grade::where('student_id', $student->id)
-                ->where('group_id', $group->id)
-                ->where('date', '>=', now()->subDays(30)->toDateString())
-                ->avg('grade');
-            $student->monthly_avg_grade = $avgGrade ? round($avgGrade, 1) : '-';
-        }
-        
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
                 'group' => $group->name,
@@ -61,7 +34,6 @@ class AttendanceController extends Controller
             'attendances.*.student_id' => 'required|exists:students,id',
             'attendances.*.status' => 'required|in:present,absent,late',
             'attendances.*.late_minutes' => 'nullable|integer',
-            'attendances.*.grade' => 'nullable|integer|min:0|max:100',
         ]);
 
         $groupId = $request->group_id;
@@ -97,22 +69,6 @@ class AttendanceController extends Controller
                     'late_minutes' => $attData['late_minutes'] ?? 0,
                 ]
             );
-
-            // Save grade if provided
-            if (isset($attData['grade']) && $attData['grade'] !== null && $attData['grade'] !== '') {
-                \App\Models\Grade::updateOrCreate(
-                    [
-                        'group_id' => $groupId,
-                        'student_id' => $attData['student_id'],
-                        'date' => $date,
-                    ],
-                    [
-                        'company_id' => $group->company_id ?? auth()->user()->company_id,
-                        'teacher_id' => $group->teacher_id ?? auth()->id(),
-                        'grade' => $attData['grade'],
-                    ]
-                );
-            }
 
             // Notify via Telegram for all statuses
             $this->sendTelegramNotification($group, $attData, $attendance);
