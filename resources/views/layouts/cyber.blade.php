@@ -26,7 +26,7 @@
     <link rel="icon" type="image/png" href="/icon-512.png">
     
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Scripts -->
@@ -40,6 +40,13 @@
             --neon-purple: #b026ff;
             --neon-pink: #ff007f;
             
+            --color-admin: {{ $colorAdmin }};
+            --color-operator: {{ $colorOperator }};
+            --color-cashier: {{ $colorCashier }};
+            --color-dev: {{ $colorDev }};
+            
+            --active-color: {{ auth()->check() ? (auth()->user()->role === 'admin' ? 'var(--color-admin)' : (auth()->user()->role === 'operator' ? 'var(--color-operator)' : (auth()->user()->role === 'cashier' ? 'var(--color-cashier)' : 'var(--color-dev)'))) : 'var(--neon-cyan)' }};
+            
             /* Glassmorphism settings */
             --glass-bg: rgba(20, 20, 35, 0.4);
             --glass-border: rgba(255, 255, 255, 0.08);
@@ -50,8 +57,7 @@
             --text-muted: #8b9bb4;
 
             /* Legacy compatibility for the Blade content */
-            --active-color: var(--neon-cyan);
-            --electric-blue: var(--neon-cyan);
+            --electric-blue: var(--active-color);
             --cyber-yellow: #fcee0a;
             --panel-bg: var(--glass-bg);
             --input-bg: rgba(0,0,0,0.3);
@@ -59,7 +65,8 @@
             --text-color: var(--text-main);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Share Tech Mono', monospace; }
+        .font-orbitron, .brand, .nav-item, .panel-title, .dynamic-island { font-family: 'Orbitron', sans-serif; }
 
         body {
             background-color: var(--bg-dark);
@@ -121,16 +128,17 @@
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .brand { font-size: 22px; font-weight: 800; margin-bottom: 40px; text-align: center; letter-spacing: 1px; }
-        .brand span { color: var(--neon-cyan); text-shadow: 0 0 10px rgba(0,255,204,0.4); }
+        .brand span { color: var(--active-color); text-shadow: 0 0 10px rgba(0,255,204,0.4); }
         
         .nav-item {
             padding: 12px 18px; border-radius: 14px; margin-bottom: 6px; cursor: pointer;
-            display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 600; color: var(--text-muted);
+            display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 600; color: var(--active-color);
             transition: all 0.2s ease; border: 1px solid transparent;
             text-decoration: none;
+            opacity: 0.85;
         }
-        .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
-        .nav-item.active { background: rgba(0, 255, 204, 0.08); border-color: rgba(0, 255, 204, 0.2); color: var(--neon-cyan); }
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text-main); text-shadow: 0 0 5px var(--active-color); opacity: 1; }
+        .nav-item.active { background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.1); color: var(--active-color); text-shadow: 0 0 8px var(--active-color); opacity: 1; }
 
         /* Main Container */
         .main-container { flex: 1; padding: 60px 20px 15px 5px; display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden; z-index: 10; position: relative;}
